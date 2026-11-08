@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f3eadf" />
+  <meta name="description" content="A playful, interactive 3D field guide to a deceptively simple question: how much fits in a bowl?" />
+  <title>The Bowl Index — How Much Fits in a Bowl?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#302926; --muted:#776e65; --paper:#f3eadf; --accent:#a54d34; --line:rgba(53,42,37,.2); --side:clamp(24px,5.4vw,100px); --sans:'DM Sans',sans-serif; --display:'Instrument Serif',Georgia,serif; }
+    * {box-sizing:border-box}
+    html { scroll-behavior:auto; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+    button, a { -webkit-tap-highlight-color:transparent; }
+    button { font:inherit; }
+    button:focus-visible, a:focus-visible {outline:2px solid var(--accent);outline-offset:5px;}
+    ::selection {background:#cc725b;color:#fff;}
+    .experience {position:relative;width:100%;height:100svh;min-height:650px;isolation:isolate;overflow:hidden;background:#f3eadf;}
+    .experience::before {content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.22;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");}
+    .sun-circle {position:absolute;z-index:0;width:min(57vw,920px);height:min(57vw,920px);border:1px solid rgba(114,93,68,.15);border-radius:50%;left:calc(69% - min(28.5vw,460px));top:calc(53% - min(28.5vw,460px));pointer-events:none;}
+    .sun-circle::before,.sun-circle::after {content:'';position:absolute;border:1px solid rgba(114,93,68,.11);border-radius:50%;inset:11%;}
+    .sun-circle::after {inset:23%;}
+    .stage-glow {position:absolute;inset:3% 0 0 28%;background:radial-gradient(ellipse at 62% 56%,rgba(207,135,83,.13) 0%,rgba(207,135,83,.04) 39%,transparent 72%);pointer-events:none;z-index:0;}
+    #three-canvas {position:absolute;inset:0;width:100%;height:100%;z-index:2;display:block;cursor:grab;touch-action:pan-y;}
+    #three-canvas:active {cursor:grabbing;}
+    .story-rail {position:relative;z-index:3;display:flex;height:100%;width:max-content;pointer-events:none;will-change:transform;}
+    .panel {width:100vw;height:100%;flex:0 0 100vw;display:flex;align-items:center;padding:112px var(--side) 118px;position:relative;}
+    .panel-content {position:relative;width:min(46vw,630px);max-width:630px;pointer-events:none;}
+    .eyebrow {display:inline-flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.19em;font-weight:700;text-transform:uppercase;color:var(--accent);margin:0 0 clamp(20px,4vh,45px);}
+    .eyebrow .dash {display:inline-block;width:28px;height:1px;background:currentColor;}
+    h1,h2,p {margin-top:0;}
+    h1,h2 {font-family:var(--display);font-weight:400;letter-spacing:-.055em;line-height:.93;}
+    h1 {font-size:clamp(72px,8.35vw,155px);margin-bottom:30px;max-width:850px;}
+    h1 em,h2 em {font-weight:400;color:var(--accent);}
+    h2 {font-size:clamp(68px,7.8vw,146px);margin-bottom:28px;}
+    .deck {font-size:clamp(15px,1.21vw,19px);line-height:1.75;letter-spacing:-.01em;max-width:410px;color:#655b54;margin-bottom:34px;}
+    .chapter-id {display:flex;align-items:center;gap:14px;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:32px;}
+    .chapter-id .num {border:1px solid currentColor;border-radius:100%;width:32px;height:32px;display:grid;place-items:center;letter-spacing:0;font-size:11px;}
+    .stat {display:flex;align-items:baseline;gap:15px;margin-top:24px;}
+    .stat-number {font-family:var(--display);font-size:clamp(58px,6.1vw,105px);line-height:1;letter-spacing:-.065em;}
+    .stat-label {font-size:13px;line-height:1.5;font-weight:600;color:var(--muted);max-width:120px;}
+    .footnote {font-size:11px;line-height:1.6;color:#80766d;margin:12px 0 0;max-width:365px;}
+    .scroll-cue {display:inline-flex;gap:17px;align-items:center;text-transform:uppercase;letter-spacing:.15em;font-weight:700;font-size:11px;margin-top:14px;color:var(--ink);}
+    .scroll-cue-icon {display:grid;place-items:center;width:49px;height:49px;border:1px solid var(--line);border-radius:50%;}
+    .scroll-cue-icon svg {width:18px;height:18px;}
+    .intro .panel-content {width:min(54vw,770px);}
+    .intro h1 {font-size:clamp(78px,8.6vw,160px);}
+    .intro .deck {max-width:430px;}
+    .panel-content > * {text-wrap:pretty;}
+    .topbar {position:absolute;z-index:8;left:var(--side);right:var(--side);top:32px;height:49px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;}
+    .brand {display:flex;gap:12px;align-items:center;text-transform:uppercase;letter-spacing:.145em;font-size:12px;font-weight:700;white-space:nowrap;}
+    .brand-symbol {width:32px;height:32px;display:inline-block;position:relative;}
+    .brand-symbol::before {content:'';position:absolute;left:2px;top:11px;width:28px;height:16px;border:2px solid var(--ink);border-radius:0 0 22px 22px;border-top:0;transform:rotate(-8deg);}
+    .brand-symbol::after {content:'';position:absolute;left:2px;top:10px;width:28px;border-top:2px solid var(--ink);transform:rotate(-8deg);}
+    .topbar-right {display:flex;gap:34px;align-items:center;font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;}
+    .topbar-right .edition {color:#776c62;}
+    .text-button {padding:9px 0;border:0;border-bottom:1px solid currentColor;background:transparent;color:var(--ink);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;pointer-events:auto;cursor:pointer;}
+    .bowl-annotation {position:absolute;z-index:4;pointer-events:none;right:clamp(30px,7vw,130px);top:23%;display:flex;align-items:center;gap:14px;font-size:11px;font-weight:700;letter-spacing:.18em;color:#75695f;text-transform:uppercase;}
+    .annotation-rule {width:72px;height:1px;background:#a58a77;transform:rotate(-21deg);transform-origin:right;}
+    .dimension {position:absolute;z-index:4;pointer-events:none;right:var(--side);bottom:155px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#796e65;font-weight:700;}
+    .dimension::before {content:'';height:1px;width:30px;background:#8f8073;}
+    .capacity {position:absolute;z-index:7;left:var(--side);bottom:43px;display:flex;gap:9px;align-items:center;pointer-events:auto;}
+    .capacity-title {font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:700;color:#776e65;margin-right:10px;}
+    .size-button {background:rgba(255,255,255,.2);color:#756b63;border:1px solid #c4b9ac;border-radius:50px;min-width:75px;padding:11px 14px;cursor:pointer;transition:background .25s,color .25s,border-color .25s,transform .25s;font-size:11px;font-weight:700;}
+    .size-button:hover {transform:translateY(-2px);}
+    .size-button[aria-pressed="true"] {background:var(--ink);border-color:var(--ink);color:#fffaf2;}
+    .story-nav {position:absolute;z-index:7;right:var(--side);bottom:43px;display:flex;align-items:center;gap:15px;pointer-events:auto;}
+    .nav-caption {text-align:right;display:flex;flex-direction:column;gap:4px;min-width:116px;}
+    .nav-caption strong {font-size:11px;letter-spacing:.13em;text-transform:uppercase;}
+    .nav-caption span {font-size:10px;color:#82756d;letter-spacing:.08em;}
+    .timeline {display:flex;align-items:center;gap:5px;}
+    .step {width:22px;height:22px;border:0;background:transparent;display:grid;place-items:center;padding:0;cursor:pointer;}
+    .step::after {content:'';width:18px;height:2px;background:#bfb2a6;transition:background .2s,transform .2s;}
+    .step[aria-current="step"]::after {background:var(--accent);height:4px;transform:scaleX(1.1);}
+    .stage-label {position:absolute;z-index:4;top:50%;right:27px;writing-mode:vertical-rl;font-weight:700;letter-spacing:.19em;text-transform:uppercase;font-size:10px;color:#817369;pointer-events:none;}
+    .end .panel-content {width:min(51vw,690px);}
+    .end h2 {font-size:clamp(70px,8.1vw,145px);}
+    .replay {pointer-events:auto;border:none;background:var(--ink);color:white;border-radius:100px;padding:16px 24px;font-weight:700;font-size:12px;letter-spacing:.05em;cursor:pointer;transition:transform .2s,background .2s;margin-top:4px;}
+    .replay:hover {transform:translateY(-3px);background:#4f3d37;}
+    .footer {padding:55px var(--side);display:flex;justify-content:space-between;gap:20px;align-items:center;background:#302926;color:#ded1c4;font-size:12px;line-height:1.65;}
+    .footer span {max-width:520px;}
+    .footer strong {font-weight:700;color:#fff9ed;}
+    .footer a {color:#fff9ed;text-decoration:underline;text-underline-offset:4px;}
+    dialog {border:0;max-width:min(550px,calc(100vw - 36px));padding:0;background:#faf4eb;color:var(--ink);box-shadow:0 22px 85px rgba(37,26,21,.24);}
+    dialog::backdrop {background:rgba(34,24,22,.45);backdrop-filter:blur(5px);}
+    .modal-content {padding:42px;position:relative;}
+    .modal-content h3 {font:normal 55px/1 var(--display);letter-spacing:-.04em;margin:8px 0 18px;}
+    .modal-content p,.modal-content li {font-size:14px;line-height:1.75;color:#625851;}
+    .modal-content ul {padding-left:19px;}
+    .close-modal {position:absolute;top:18px;right:18px;border:1px solid #c7b8a8;border-radius:50%;width:37px;height:37px;background:none;cursor:pointer;font-size:22px;}
+    .formula {padding:18px 20px;margin:22px 0;border-top:1px solid #c9bcac;border-bottom:1px solid #c9bcac;font:normal 26px/1.3 var(--display);}
+    .preload {position:fixed;z-index:20;inset:0;background:#f3eadf;display:grid;place-items:center;transition:opacity .8s ease,visibility .8s ease;}
+    .preload.off {opacity:0;visibility:hidden;pointer-events:none;}
+    .preload-content {font-family:var(--display);font-size:40px;color:var(--accent);font-style:italic;text-align:center;}
+    .preload-content small {display:block;font:700 10px/1.5 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:#85756c;margin-top:14px;}
+    .fallback .preload {display:none;}
+    .fallback .experience {height:auto;min-height:0;overflow:visible;}
+    .fallback .story-rail {width:100%;height:auto;flex-direction:column;transform:none!important;}
+    .fallback .panel {width:100%;min-height:90vh;background:#f3eadf;}
+    .fallback .panel:nth-child(even){background:#ebe4d9;}
+    .fallback .topbar {position:absolute;}
+    .fallback .capacity,.fallback .story-nav,.fallback .dimension,.fallback .stage-label,.fallback .bowl-annotation {display:none;}
+    .fallback .story-rail {pointer-events:auto;}
+    .fallback .panel-content {width:85vw;}
+    @media (max-width:900px) {
+      :root {--side:clamp(22px,5vw,48px);}
+      .experience {min-height:590px;}
+      .topbar {top:17px;}
+      .topbar-right {gap:14px;}
+      .topbar-right .edition {display:none;}
+      .panel {padding-top:125px;padding-bottom:105px;align-items:flex-end;}
+      .panel-content,.intro .panel-content,.end .panel-content {width:88%;max-width:510px;}
+      h1,.intro h1 {font-size:clamp(64px,10.8vw,101px);}
+      h2,.end h2 {font-size:clamp(65px,9.7vw,96px);}
+      .deck {font-size:14px;line-height:1.55;max-width:390px;}
+      .chapter-id {margin-bottom:15px;}
+      .eyebrow {margin-bottom:18px;}
+      .stat {margin-top:10px;}
+      .stat-number {font-size:60px;}
+      .bowl-annotation {top:18%;right:4%;}
+      .stage-label {display:none;}
+      .dimension {bottom:122px;}
+      .sun-circle {width:70vw;height:70vw;left:43%;top:5%;}
+      .capacity {bottom:24px;}
+      .story-nav {bottom:22px;}
+    }
+    @media (max-width:600px) {
+      .experience {height:100svh;min-height:660px;}
+      .brand {font-size:10px;letter-spacing:.08em;gap:5px;}
+      .brand-symbol {transform:scale(.8);transform-origin:left;}
+      .topbar {right:24px;left:17px;top:14px;}
+      .text-button {font-size:10px;}
+      .panel {padding: 80px 24px 145px;align-items:flex-end;}
+      .panel-content,.intro .panel-content,.end .panel-content {width:100%;max-width:100%;}
+      h1,.intro h1 {font-size:clamp(61px,15vw,89px);margin-bottom:13px;max-width:420px;}
+      h2,.end h2 {font-size:clamp(66px,14.3vw,93px);margin-bottom:14px;max-width:430px;}
+      .eyebrow {margin-bottom:11px;font-size:9px;}
+      .chapter-id {font-size:10px;margin-bottom:10px;}
+      .deck {font-size:13px;line-height:1.6;max-width:315px;margin-bottom:14px;}
+      .stat {margin-top:0;gap:10px;}
+      .stat-number {font-size:clamp(53px,13vw,76px);}
+      .stat-label {font-size:11px;}
+      .footnote {font-size:10px;margin-top:5px;}
+      .scroll-cue {font-size:10px;margin-top:10px;}
+      .scroll-cue-icon {width:38px;height:38px;}
+      .bowl-annotation {top:15%;right:7%;font-size:8px;letter-spacing:.1em;}
+      .annotation-rule {width:30px;}
+      .dimension {bottom:calc(47% + 3px);right:27px;font-size:9px;}
+      .capacity {bottom:70px;left:24px;right:24px;justify-content:flex-start;gap:5px;}
+      .capacity-title {font-size:9px;margin-right:6px;}
+      .size-button {min-width:65px;padding:9px 10px;font-size:10px;}
+      .story-nav {bottom:22px;left:24px;right:24px;justify-content:space-between;}
+      .nav-caption {text-align:left;min-width:auto;}
+      .nav-caption strong {font-size:10px;}
+      .nav-caption span {font-size:9px;}
+      .timeline {gap:1px;}
+      .step {width:19px;}
+      .step::after {width:13px;}
+      .sun-circle {width:380px;height:380px;left:calc(50% - 190px);top:8%;}
+      .stage-glow {inset:0;}
+      .footer {flex-direction:column;align-items:flex-start;padding:34px 24px;}
+      .modal-content {padding:32px 24px;}
+      .modal-content h3 {font-size:45px;}
+    }
+    @media (max-width:370px) {h1,.intro h1{font-size:58px;}h2,.end h2{font-size:60px;}.stat-number{font-size:52px;}.capacity-title{display:none;}.deck{font-size:12px;}}
+    @media (prefers-reduced-motion:reduce) {*,*::before,*::after {scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;}}
+  </style>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body>
+<div class="preload" id="preload" aria-live="polite"><div class="preload-content">A curious little question.<small>Preparing the experiment</small></div></div>
+<main>
+  <section class="experience" id="experience" aria-label="The Bowl Index interactive story">
+    <div class="sun-circle" aria-hidden="true"></div><div class="stage-glow" aria-hidden="true"></div>
+    <canvas id="three-canvas" aria-label="A three-dimensional ceramic bowl filled with different foods as the story advances"></canvas>
+    <header class="topbar">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true"></span> THE BOWL INDEX</div>
+      <div class="topbar-right"><span class="edition">AN INTERACTIVE FIELD GUIDE · VOL. 01</span><button class="text-button" id="about-button" type="button">The method ↗</button></div>
+    </header>
+    <div class="bowl-annotation" aria-hidden="true"><span class="annotation-rule"></span><span>FIG. 001<br/>THE VESSEL</span></div>
+    <div class="dimension" aria-live="polite"><span id="capacity-stamp">750 ML</span> · NOT TO SCALE</div>
+    <div class="stage-label" aria-hidden="true">AN EXERCISE IN EVERYDAY CURIOSITY</div>
+
+    <div class="story-rail" id="story-rail">
+      <article class="panel intro" data-name="The Question">
+        <div class="panel-content">
+          <div class="eyebrow"><span class="dash"></span> A VERY SERIOUS INVESTIGATION OF SOMETHING SILLY</div>
+          <h1>How much <em>really</em> fits in a bowl?</h1>
+          <p class="deck">One ordinary bowl. Six delightfully different things. An unnecessarily beautiful way to see just how much “a bowlful” can mean.</p>
+          <div class="scroll-cue"><span class="scroll-cue-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span><span>SCROLL TO EXPLORE</span></div>
+        </div>
+      </article>
+      <article class="panel" data-name="Rice">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">01</span> THE VERY SMALL THINGS</div>
+          <h2>A thousand <em>tiny</em> worlds.</h2>
+          <p class="deck">A single grain barely registers in your hand. A bowlful is an entirely different story.</p>
+          <div class="stat"><span class="stat-number" data-estimate="rice">~28,000</span><span class="stat-label">grains<br/>of rice</span></div>
+          <p class="footnote">Estimated for uncooked, long-grain rice.</p>
+        </div>
+      </article>
+      <article class="panel" data-name="Lentils">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">02</span> SMALL, BUT MIGHTY</div>
+          <h2>Good things <em>pile up.</em></h2>
+          <p class="deck">Little earthy coins, endlessly tumbling. Fewer than rice, but still a rather magnificent crowd.</p>
+          <div class="stat"><span class="stat-number" data-estimate="lentils">~9,800</span><span class="stat-label">whole<br/>lentils</span></div>
+          <p class="footnote">Approximation for dry, medium-size lentils.</p>
+        </div>
+      </article>
+      <article class="panel" data-name="Blueberries">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">03</span> A LITTLE MORE DELICATE</div>
+          <h2>A bowl of <em>blue.</em></h2>
+          <p class="deck">Round, soft, and gloriously imperfect. The number shrinks. The snack potential does not.</p>
+          <div class="stat"><span class="stat-number" data-estimate="berries">~260</span><span class="stat-label">fresh<br/>blueberries</span></div>
+          <p class="footnote">Averages assume medium, roughly 15 mm berries.</p>
+        </div>
+      </article>
+      <article class="panel" data-name="Nuts">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">04</span> AN EXERCISE IN CRUNCH</div>
+          <h2>Some <em>serious</em> crunch.</h2>
+          <p class="deck">Almonds, walnuts, pistachios. Different shapes make for a beautifully unpredictable jumble.</p>
+          <div class="stat"><span class="stat-number" data-estimate="nuts">~115</span><span class="stat-label">mixed<br/>nuts</span></div>
+          <p class="footnote">A loose mix of shelled nuts; size varies widely.</p>
+        </div>
+      </article>
+      <article class="panel" data-name="Crickets">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">05</span> AND NOW FOR SOMETHING ODD</div>
+          <h2>Wait. <em>Crickets?</em></h2>
+          <p class="deck">Yes, crickets. Because a good question gets more interesting when the answers get a little weird.</p>
+          <div class="stat"><span class="stat-number" data-estimate="crickets">~410</span><span class="stat-label">little<br/>crickets</span></div>
+          <p class="footnote">Highly speculative: species, legs, and packing change everything.</p>
+        </div>
+      </article>
+      <article class="panel" data-name="Apples">
+        <div class="panel-content">
+          <div class="chapter-id"><span class="num">06</span> SIZE CHANGES EVERYTHING</div>
+          <h2>And then, <em>apples.</em></h2>
+          <p class="deck">Suddenly the bowl feels much smaller. A handful of fruit, and you’ve run out of room.</p>
+          <div class="stat"><span class="stat-number" data-estimate="apples">~5</span><span class="stat-label">small<br/>apples</span></div>
+          <p class="footnote">For small apples; larger ones fit far fewer.</p>
+        </div>
+      </article>
+      <article class="panel end" data-name="The Answer">
+        <div class="panel-content">
+          <div class="eyebrow"><span class="dash"></span> THE END OF THE EXPERIMENT</div>
+          <h2>It all <em>depends</em> on what you put in it.</h2>
+          <p class="deck">The bowl never changed. Only our sense of what it could hold. Try another size below, or take the trip again.</p>
+          <button class="replay" id="replay" type="button">↶ &nbsp; Start over</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="capacity" role="group" aria-label="Choose bowl capacity">
+      <span class="capacity-title">THE BOWL</span>
+      <button class="size-button" data-size="350" aria-pressed="false" type="button">350 ml</button>
+      <button class="size-button" data-size="750" aria-pressed="true" type="button">750 ml</button>
+      <button class="size-button" data-size="1500" aria-pressed="false" type="button">1.5 L</button>
+    </div>
+    <nav class="story-nav" aria-label="Story chapters">
+      <div class="nav-caption"><strong id="chapter-name">THE QUESTION</strong><span id="chapter-counter">01 OF 08</span></div>
+      <div class="timeline" id="timeline"></div>
+    </nav>
+  </section>
+  <footer class="footer"><span><strong>THE BOWL INDEX</strong> · A playful, illustrative thought experiment. Counts are volume-based estimates, not measurements or a physical packing simulation.</span><a href="#experience" id="top-link">Back to the beginning ↑</a></footer>
+</main>
+<dialog id="method-dialog" aria-labelledby="method-title">
+ <div class="modal-content">
+   <button class="close-modal" id="close-modal" type="button" aria-label="Close explanation">×</button>
+   <div class="eyebrow"><span class="dash"></span> A NOTE ON OUR NUMBERS</div>
+   <h3 id="method-title">The very unscientific science.</h3>
+   <p>These are informed ballpark estimates, not experimentally measured counts. The page uses a consistent volume model to give the story scale:</p>
+   <div class="formula">Estimated count ≈ (bowl volume × packing fraction) ÷ item volume</div>
+   <p>Real quantities depend on variety, size, shape, moisture, how contents are arranged, and whether a bowl is heaped. The 3D contents are <em>illustrative samples</em>—not one rendered mesh per grain.</p>
+   <p>Especially for crickets and apples, take the number as an invitation to wonder, not a scientific claim.</p>
+ </div>
+</dialog>
+<script>
+  // If CDN dependencies are blocked, keep the editorial story readable vertically.
+  setTimeout(() => {
+    if (!document.body.dataset.ready) document.body.classList.add('fallback');
+    document.querySelector('#preload')?.classList.add('off');
+  }, 6500);
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const gsap = window.gsap;
+const ScrollTrigger = window.ScrollTrigger;
+if (!gsap || !ScrollTrigger) throw new Error('Motion libraries unavailable');
+gsap.registerPlugin(ScrollTrigger);
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobileQuery = window.matchMedia('(max-width: 600px)');
+const sceneEl = document.getElementById('experience');
+const canvas = document.getElementById('three-canvas');
+const panels = [...document.querySelectorAll('.panel')];
+const rail = document.getElementById('story-rail');
+const chapterName = document.getElementById('chapter-name');
+const chapterCounter = document.getElementById('chapter-counter');
+const capStamp = document.getElementById('capacity-stamp');
+let capacity = 750, activeStage = 0, food = null, scrollTrigger = null;
+const baseEstimates = { rice:28000, lentils:9800, berries:260, nuts:115, crickets:410, apples:5 };
+const typesByPanel = [null,'rice','lentils','berries','nuts','crickets','apples',null];
+const themes = ['#f3eadf','#e8e9da','#f0e2d3','#e9e6ef','#ecdfcc','#e5e8d2','#f0ded4','#eee4d8'];
+const randFromSeed = (seed) => {let x = seed >>> 0;return () => {x += 0x6D2B79F5;let t=x;t=Math.imul(t^(t>>>15),t|1);t ^= t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};};
+const clamp = (x,min=0,max=1) => Math.min(max,Math.max(min,x));
+const easeOut = (x) => 1-Math.pow(1-clamp(x),4);
+const formatCount = (type) => '~'+Math.max(1,Math.round(baseEstimates[type]*capacity/750)).toLocaleString('en-US');
+function updateEstimates() {for(const [key] of Object.entries(baseEstimates)) document.querySelector(`[data-estimate="${key}"]`).textContent = formatCount(key);capStamp.textContent = capacity >= 1000 ? (capacity/1000).toFixed(1)+' L' : capacity+' ML';}
+
+const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,1.8));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.35;
+renderer.setClearColor(0xffffff,0);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32,1,.1,100);
+scene.add(new THREE.HemisphereLight(0xfff9ec,0x99806c,2.25));
+const key = new THREE.DirectionalLight(0xfff4df,3.15);key.position.set(-4,9,8);scene.add(key);
+const bounce = new THREE.DirectionalLight(0xffffff,1.65);bounce.position.set(5,4,-5);scene.add(bounce);
+const peach = new THREE.PointLight(0xe9a97a,30,20);peach.position.set(2,4,4);scene.add(peach);
+
+// A lathed, double-walled ceramic object: exterior, rolled lip, and visible interior.
+const root = new THREE.Group();scene.add(root);
+const bowlModel = new THREE.Group();root.add(bowlModel);
+const profile = [[0,.07],[.58,.07],[.82,.105],[1.02,.18],[1.27,.34],[1.51,.55],[1.73,.76],[1.94,.99],[2.11,1.23],[2.17,1.36],[2.13,1.43],[2.03,1.43],[1.96,1.32],[1.8,1.12],[1.59,.89],[1.36,.67],[1.11,.49],[.84,.36],[.49,.29],[0,.28]].map(([r,y]) => new THREE.Vector2(r,y));
+const ceramicMat = new THREE.MeshPhysicalMaterial({color:'#efe2cf',roughness:.29,metalness:0,clearcoat:.75,clearcoatRoughness:.25,side:THREE.DoubleSide});
+const ceramic = new THREE.Mesh(new THREE.LatheGeometry(profile,100),ceramicMat);
+bowlModel.add(ceramic);
+function circleTrim(radius,height,thickness,color) {const mesh=new THREE.Mesh(new THREE.TorusGeometry(radius,thickness,9,120),new THREE.MeshStandardMaterial({color,roughness:.43}));mesh.rotation.x=Math.PI/2;mesh.position.y=height;bowlModel.add(mesh);return mesh;}
+circleTrim(2.079,1.411,.034,'#a26049');
+circleTrim(2.035,1.103,.013,'#b78365');
+circleTrim(.645,.077,.028,'#b78f73');
+// Fine concentric detail at the bottom of the bowl interior.
+circleTrim(.56,.3,.012,'#d6bca4');
+
+const shadowCanvas = document.createElement('canvas');shadowCanvas.width=128;shadowCanvas.height=128;
+const ctx=shadowCanvas.getContext('2d');const gradient=ctx.createRadialGradient(64,64,8,64,64,64);
+gradient.addColorStop(0,'rgba(75,49,34,.32)');gradient.addColorStop(.45,'rgba(75,49,34,.18)');gradient.addColorStop(1,'rgba(75,49,34,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,128,128);
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(6.9,5.4),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(shadowCanvas),transparent:true,depthWrite:false,opacity:.75}));
+shadow.rotation.x=-Math.PI/2;shadow.position.y=-.055;root.add(shadow);
+
+const riceGeo = new THREE.SphereGeometry(1,9,7);
+const lentilGeo = new THREE.SphereGeometry(1,12,8);
+const berryGeo = new THREE.SphereGeometry(1,16,12);
+const almondGeo = new THREE.SphereGeometry(1,12,10);
+const walnutGeo = new THREE.IcosahedronGeometry(1,2);
+const pistachioGeo = new THREE.SphereGeometry(1,12,10);
+{
+ const p=almondGeo.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i);const tip=0.69+0.31*(1-Math.abs(y));p.setX(i,p.getX(i)*tip);p.setZ(i,p.getZ(i)*tip);}almondGeo.computeVertexNormals();
+ const w=walnutGeo.attributes.position;for(let i=0;i<w.count;i++){const x=w.getX(i),y=w.getY(i),z=w.getZ(i);const d=1+.085*Math.sin(x*16+y*9)+.065*Math.cos(z*21-y*13);w.setXYZ(i,x*d,y*d,z*d);}walnutGeo.computeVertexNormals();
+}
+function rodBetween(a,b,r,segments=5){const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b);const dir=end.clone().sub(start);const g=new THREE.CylinderGeometry(r*.7,r,dir.length(),segments);g.applyMatrix4(new THREE.Matrix4().compose(start.clone().add(end).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize()),new THREE.Vector3(1,1,1)));return g;}
+function cricketGeometry(){
+ const g=[];
+ const addBall=(pos,s)=>{const b=new THREE.SphereGeometry(1,10,7);b.scale(...s);b.translate(...pos);g.push(b);};
+ addBall([0,0,0],[.12,.095,.26]);addBall([0,.016,.225],[.105,.09,.105]);addBall([0,.055,-.03],[.10,.04,.18]);
+ for(const side of [-1,1]) {
+   g.push(rodBetween([side*.095,-.025,-.07],[side*.26,.12,-.27],.016));
+   g.push(rodBetween([side*.26,.12,-.27],[side*.34,-.12,-.37],.011));
+   g.push(rodBetween([side*.08,-.04,.08],[side*.27,-.10,.16],.01));
+   g.push(rodBetween([side*.27,-.10,.16],[side*.37,-.22,.25],.008));
+   g.push(rodBetween([side*.065,-.04,-.12],[side*.22,-.15,-.13],.01));
+   g.push(rodBetween([side*.22,-.15,-.13],[side*.29,-.23,-.02],.008));
+   g.push(rodBetween([side*.055,.035,.29],[side*.18,.13,.48],.006));
+ }
+ const result=mergeGeometries(g,false);for(const x of g)x.dispose();return result;
+}
+const cricketGeo = cricketGeometry();
+const geometries={rice:riceGeo,lentils:lentilGeo,berries:berryGeo,nuts:[almondGeo,walnutGeo,pistachioGeo],crickets:cricketGeo};
+const renderBase={rice:1700,lentils:1400,berries:225,nuts:115,crickets:175};
+const palettes={
+ rice:['#fff0d0','#e9d4aa','#f5e5c5','#d7bc8e'],
+ lentils:['#d7834b','#c75f37','#a88b51','#ae6b3e','#dd9b65'],
+ berries:['#313f87','#3f559b','#5265a0','#242f69','#6670af'],
+ nuts:[['#a66738','#bb7940','#92552f'],['#8c5c37','#ad7a4b','#7a4b2f'],['#e5ca91','#dac18c','#cfaa73']],
+ crickets:['#8c7444','#867a3b','#a68b4d','#6e6739']
+};
+const genericMat = (roughness=.72)=> new THREE.MeshStandardMaterial({color:0xffffff,roughness,metalness:0});
+const tmpObj = new THREE.Object3D();
+const tmpColor = new THREE.Color();
+function pointInBowl(rand,bowlScale,type) {
+ const y=.43+rand()*.77;
+ const maxRadius=.75+1.11*Math.sqrt((y-.28)/1.15);
+ const a=rand()*Math.PI*2;
+ const r=Math.sqrt(rand())*maxRadius*(type==='crickets'?.92:.96);
+ return new THREE.Vector3(Math.cos(a)*r*bowlScale,y*bowlScale,Math.sin(a)*r*bowlScale);
+}
+function makeScatter(type){
+ const rand=randFromSeed(7319+Object.keys(baseEstimates).indexOf(type)*827+capacity);
+ const capacityRatio=capacity/750, bs=Math.cbrt(capacityRatio);
+ const group=new THREE.Group();root.add(group);
+ const base=Math.min(3500,Math.max(1,Math.round(renderBase[type]*capacityRatio)));
+ const variations=type==='nuts'?3:1;
+ const distribution=variations===3?[Math.floor(base*.39),Math.floor(base*.30),base-Math.floor(base*.39)-Math.floor(base*.30)]:[base];
+ const records=[],meshes=[];
+ for(let v=0;v<variations;v++){
+   const count=distribution[v],mesh=new THREE.InstancedMesh(Array.isArray(geometries[type])?geometries[type][v]:geometries[type],genericMat(type==='berries'?.54:.69),count);
+   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled=false;group.add(mesh);meshes.push(mesh);
+   const colors=type==='nuts'?palettes.nuts[v]:palettes[type];
+   for(let i=0;i<count;i++){
+     const p=pointInBowl(rand,bs,type);
+     const r=.84+rand()*.3;
+     let sx,sy,sz;
+     if(type==='rice'){sx=.041*r;sy=.032*r;sz=.108*r;}
+     else if(type==='lentils'){sx=.095*r;sy=.038*r;sz=.097*r;}
+     else if(type==='berries'){sx=.17*r;sy=.17*r;sz=.17*r;}
+     else if(type==='crickets'){sx=.64*r;sy=.64*r;sz=.64*r;}
+     else if(v===0){sx=.15*r;sy=.26*r;sz=.145*r;}
+     else if(v===1){sx=.205*r;sy=.184*r;sz=.19*r;}
+     else {sx=.16*r;sy=.20*r;sz=.15*r;}
+     const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(rand()*6.28,rand()*6.28,rand()*6.28));
+     const scale=new THREE.Vector3(sx,sy,sz);
+     mesh.setColorAt(i,tmpColor.set(colors[Math.floor(rand()*colors.length)]));
+     records.push({mesh,index:i,p,q,scale,delay:Math.pow(rand(),1.6)*.55,drop:1.4+rand()*2.6,drift:(rand()-.5)*1.1});
+   }
+   if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
+ }
+ return {group,records,meshes,apples:[],progress:0};
+}
+function appleGeometry(){
+ const g=new THREE.SphereGeometry(1,36,24);const p=g.attributes.position;
+ for(let i=0;i<p.count;i++){
+    let x=p.getX(i),y=p.getY(i),z=p.getZ(i);const theta=Math.atan2(z,x);
+    const lobe=1+.034*Math.cos(5*theta)*Math.pow(Math.abs(y),3);
+    const cavity=.15*Math.pow(Math.abs(y),18);
+    p.setXYZ(i,x*lobe*.56,(y - Math.sign(y)*cavity)*.55,z*lobe*.56);
+ }g.computeVertexNormals();return g;
+}
+const appleGeo=appleGeometry();
+function createApple(index,rand){
+ const o=new THREE.Group();
+ const shades=['#c34f36','#bb3d2e','#d36b35','#b84036','#d16f36'];
+ o.add(new THREE.Mesh(appleGeo,new THREE.MeshStandardMaterial({color:shades[index%shades.length],roughness:.45,metalness:0})));
+ const stem=new THREE.Mesh(new THREE.CylinderGeometry(.027,.04,.21,7),new THREE.MeshStandardMaterial({color:'#6c452c',roughness:1}));stem.position.set(0,.51,0);stem.rotation.z=.16;o.add(stem);
+ const leaf=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),new THREE.MeshStandardMaterial({color:'#608247',roughness:.7,side:THREE.DoubleSide}));leaf.scale.set(.17,.028,.08);leaf.position.set(.15,.58,0);leaf.rotation.z=.27;leaf.rotation.y=.4;o.add(leaf);
+ return o;
+}
+function makeApples(){
+ const group=new THREE.Group();root.add(group);
+ const rand=randFromSeed(2903+capacity);const bs=Math.cbrt(capacity/750);
+ const count=Math.min(14,Math.max(1,Math.round(5*capacity/750)));
+ const apples=[];
+ for(let i=0;i<count;i++){
+   const obj=createApple(i,rand);group.add(obj);
+   const firstLayer=Math.ceil(count*.65);const top=i>=firstLayer;const layerIndex=top?i-firstLayer:i;
+   const layerTotal=top?count-firstLayer:firstLayer;
+   const a=layerIndex*2.39996+.4, r=(layerTotal<=1?0:.55+Math.sqrt(layerIndex/Math.max(1,layerTotal-1))*.7)*bs*(top?.45:1);
+   const p=new THREE.Vector3(Math.cos(a)*r,(top?1.45:.82)*bs,Math.sin(a)*r);
+   obj.rotation.set((rand()-.5)*.4,rand()*Math.PI*2,(rand()-.5)*.35);
+   apples.push({obj,p,delay:rand()*.45,drop:2+rand()*2.6});
+ }
+ return {group,records:[],meshes:[],apples,progress:0};
+}
+function revealFood(f,t){
+ f.progress=t;
+ for(const rec of f.records){
+   const e=easeOut((t-rec.delay)/(1-rec.delay));
+   tmpObj.position.copy(rec.p);
+   tmpObj.position.y+=(1-e)*rec.drop;
+   tmpObj.position.x+=(1-e)*rec.drift;
+   tmpObj.quaternion.copy(rec.q);
+   tmpObj.scale.copy(rec.scale).multiplyScalar(.15+.85*e);
+   tmpObj.updateMatrix();rec.mesh.setMatrixAt(rec.index,tmpObj.matrix);
+ }
+ for(const m of f.meshes)m.instanceMatrix.needsUpdate=true;
+ for(const a of f.apples){const e=easeOut((t-a.delay)/(1-a.delay));a.obj.position.copy(a.p);a.obj.position.y+=(1-e)*a.drop;a.obj.scale.setScalar(.3+.7*e);}
+}
+function disposeFood(f){if(!f)return;root.remove(f.group);f.group.traverse(o=>{if(o.isInstancedMesh||o.isMesh){if(o.material?.dispose)o.material.dispose();}});}
+function switchFood(type,instant=false){
+ if(food){const old=food;food=null;gsap.killTweensOf(old); if(instant){disposeFood(old);}else gsap.to(old.group.position,{y:-1.2,duration:.45,ease:'power2.in',onComplete:()=>disposeFood(old)});}
+ if(!type)return;
+ food=type==='apples'?makeApples():makeScatter(type);
+ const current=food;
+ revealFood(current,0);
+ if(instant||reducedMotion){revealFood(current,1);return;}
+ gsap.to(current,{progress:1,duration:1.55,ease:'none',onUpdate:()=>revealFood(current,current.progress)});
+}
+function setStage(n,instant=false){
+ const index=Math.max(0,Math.min(panels.length-1,n));if(index===activeStage&&!instant)return;
+ activeStage=index;
+ chapterName.textContent=panels[index].dataset.name.toUpperCase();
+ chapterCounter.textContent=String(index+1).padStart(2,'0')+' OF '+String(panels.length).padStart(2,'0');
+ document.querySelectorAll('.step').forEach((s,i)=>{if(i===index)s.setAttribute('aria-current','step');else s.removeAttribute('aria-current');});
+ gsap.to(sceneEl,{backgroundColor:themes[index],duration:instant?0:1.1,ease:'power2.out',overwrite:true});
+ switchFood(typesByPanel[index],instant);
+}
+function resizeScene(){
+ const w=sceneEl.clientWidth,h=sceneEl.clientHeight;
+ renderer.setSize(w,h,false);camera.aspect=w/h;
+ const isMobile=mobileQuery.matches;
+ if(isMobile){camera.fov=38;camera.position.set(0,7.2,12.5);camera.lookAt(0,.6,0);root.position.set(0,1.18,0);root.scale.setScalar(.73);}
+ else if(w<=900){camera.fov=35;camera.position.set(0,6.1,11.8);camera.lookAt(0,.6,0);root.position.set(1.75,.3,0);root.scale.setScalar(.87);}
+ else{camera.fov=32;camera.position.set(0,6.1,10.7);camera.lookAt(0,.5,0);root.position.set(3.05,-.2,0);root.scale.setScalar(1);}
+ camera.updateProjectionMatrix();
+}
+resizeScene();
+window.addEventListener('resize',resizeScene);
+const timeline=document.getElementById('timeline');
+for(let i=0;i<panels.length;i++){
+ const b=document.createElement('button');b.className='step';b.type='button';b.setAttribute('aria-label','Go to '+panels[i].dataset.name);b.title=panels[i].dataset.name;
+ b.addEventListener('click',()=>goToChapter(i));timeline.appendChild(b);
+}
+function goToChapter(i){if(!scrollTrigger)return;window.scrollTo({top:scrollTrigger.start+(scrollTrigger.end-scrollTrigger.start)*i/(panels.length-1),behavior:reducedMotion?'auto':'smooth'});}
+const total=panels.length-1;
+const tween=gsap.to(rail,{x:()=>-(total*window.innerWidth),ease:'none',scrollTrigger:{trigger:sceneEl,start:'top top',end:()=>'+='+(total*Math.max(window.innerWidth*.79,window.innerHeight*.82)),pin:true,scrub:reducedMotion?true:1.15,anticipatePin:1,invalidateOnRefresh:true,onUpdate:self=>setStage(Math.round(self.progress*total))}});
+scrollTrigger=tween.scrollTrigger;
+ScrollTrigger.addEventListener('refresh',resizeScene);
+window.setTimeout(()=>ScrollTrigger.refresh(),300);
+
+for(const btn of document.querySelectorAll('.size-button')){
+ btn.addEventListener('click',()=>{
+   const next=Number(btn.dataset.size);if(next===capacity)return;
+   capacity=next;document.querySelectorAll('.size-button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.size)===next)));
+   updateEstimates();gsap.to(bowlModel.scale,{x:Math.cbrt(next/750),y:Math.cbrt(next/750),z:Math.cbrt(next/750),duration:.85,ease:'power3.out'});
+   gsap.to(shadow.scale,{x:Math.cbrt(next/750),y:Math.cbrt(next/750),duration:.85,ease:'power3.out'});
+   switchFood(typesByPanel[activeStage]);
+ });
+}
+updateEstimates();setStage(0,true);
+const dialog=document.getElementById('method-dialog');
+document.getElementById('about-button').addEventListener('click',()=>dialog.showModal());
+document.getElementById('close-modal').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+document.getElementById('replay').addEventListener('click',()=>goToChapter(0));
+document.getElementById('top-link').addEventListener('click',e=>{e.preventDefault();goToChapter(0);});
+window.addEventListener('keydown',e=>{
+ if(dialog.open||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;
+ if(e.key==='ArrowRight'){e.preventDefault();goToChapter(Math.min(total,activeStage+1));}
+ if(e.key==='ArrowLeft'){e.preventDefault();goToChapter(Math.max(0,activeStage-1));}
+});
+let isDragging=false,downX=0,yaw=0,targetYaw=0,mouseX=0;
+canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;isDragging=true;downX=e.clientX;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{mouseX=(e.clientX/window.innerWidth-.5)*2;if(isDragging){targetYaw+=(e.clientX-downX)*.006;downX=e.clientX;}});
+canvas.addEventListener('pointerup',()=>isDragging=false);
+canvas.addEventListener('pointercancel',()=>isDragging=false);
+const clock=new THREE.Clock();
+function tick(){
+ const seconds=clock.getElapsedTime();yaw+=(targetYaw-yaw)*.085;
+ bowlModel.rotation.y=yaw+Math.sin(seconds*.22)*.06;
+ if(food)food.group.rotation.y=yaw+Math.sin(seconds*.22)*.06;
+ root.rotation.z=Math.sin(seconds*.55)*.006;
+ camera.position.x+=(mouseX*.12-camera.position.x)*.007;
+ camera.lookAt(0,.55,0);
+ renderer.render(scene,camera);
+ requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+document.body.dataset.ready='true';
+document.body.classList.remove('fallback');
+document.getElementById('preload').classList.add('off');
+</script>
+</body>
+</html>
