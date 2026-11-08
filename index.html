@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#f3eadf" />
   <meta name="description" content="A playful, interactive 3D field guide to a deceptively simple question: how much fits in a bowl?" />
   <title>The Bowl Index — How Much Fits in a Bowl?</title>
@@ -167,6 +167,46 @@
     }
     @media (max-width:370px) {h1,.intro h1{font-size:58px;}h2,.end h2{font-size:60px;}.stat-number{font-size:52px;}.capacity-title{display:none;}.deck{font-size:12px;}}
     @media (prefers-reduced-motion:reduce) {*,*::before,*::after {scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;}}
+/* Impeccable adapt: reflow controls for touch, retain every feature, honor safe areas. */
+.experiment-tools{position:absolute;z-index:9;top:104px;left:var(--side);display:flex;flex-wrap:wrap;gap:8px}
+.experiment-tools button,.play-actions button,#remove-object{min-height:44px;border:1px solid #bbaa98;border-radius:24px;background:#faf4eb;color:var(--ink);padding:10px 16px;cursor:pointer;font-size:12px;font-weight:700}
+.experiment-tools button[aria-pressed=true],#add-one{background:var(--ink);color:#fff7eb;border-color:var(--ink)}
+button:disabled{opacity:.45;cursor:default}
+.timeline{gap:8px}.timeline button{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:transparent;font-size:20px;cursor:pointer;color:var(--ink)}
+.timeline select{font:600 12px var(--sans);color:var(--ink);background:#faf4eb;border:1px solid #bbaa98;border-radius:8px;padding:10px;min-height:44px;max-width:155px}
+.size-button{min-height:44px}.text-button{min-height:44px}.close-modal{min-width:44px;min-height:44px}
+.panel{padding-top:170px}.intro .deck{max-width:400px}
+#catalog-dialog{max-width:min(720px,calc(100vw - 24px));max-height:85dvh;overflow:auto;border-radius:12px}
+#item-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#item-grid button{display:grid;grid-template-columns:18px 1fr;text-align:left;align-items:center;gap:7px;padding:12px;background:#f1e8dc;border:1px solid #d7c8b7;border-radius:8px;color:var(--ink);min-height:64px;cursor:pointer;font-size:13px;font-weight:700}
+#item-grid button small{grid-column:2;font-size:10px;color:#73665a;font-weight:400}.item-swatch{width:15px;height:15px;border-radius:50%;background:var(--swatch);box-shadow:inset -2px -2px 0 #0002}
+#sandbox-controls[hidden]{display:none}
+#sandbox-controls{position:absolute;z-index:8;left:var(--side);top:180px;bottom:112px;width:310px;overflow:auto;padding:0 6px 12px 0;scrollbar-width:thin}
+.play-heading{display:flex;flex-direction:column;gap:8px}.play-heading .eyebrow{font-size:10px;margin:0}.play-heading strong{font:normal 34px/1.05 var(--display);letter-spacing:-.03em}
+.play-help{font-size:14px;line-height:1.6;color:#6a5e54;margin:14px 0}
+#sandbox-controls label{display:block;font-size:12px;font-weight:700;margin:12px 0 8px}#sandbox-controls label span{font-weight:400;color:#776e65}
+#sandbox-controls select{width:100%;min-height:44px;font:16px var(--sans);background:#faf4eb;border:1px solid #bbaa98;border-radius:8px;color:var(--ink);padding:9px 12px}
+.play-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 18px}.play-actions button{padding:10px;font-size:12px}
+.object-inspector{border-top:1px solid var(--line);padding-top:6px}#remove-object{margin-top:8px;width:100%;background:transparent}.play-status{font-size:12px;line-height:1.5;color:#776554;margin:12px 0 0}
+.playing{overflow:hidden}.sandbox-active{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;transform:none!important;z-index:30;background:#eee5d8!important}
+.sandbox-active .story-rail,.sandbox-active .story-nav,.sandbox-active .bowl-annotation,.sandbox-active .stage-label,.sandbox-active .dimension{visibility:hidden}.sandbox-active .capacity{left:auto;right:var(--side)}
+.fallback .experiment-tools{display:none}
+@media(min-width:901px) and (max-height:740px){#sandbox-controls{top:160px;bottom:85px}.panel h1,.panel h2{font-size:clamp(64px,7vw,100px)}.panel .deck{font-size:14px;line-height:1.5}.chapter-id{margin-bottom:12px}}
+@media(max-width:900px){
+ .experiment-tools{top:78px;left:24px;right:24px}.panel{padding-top:145px;padding-bottom:140px}.story-nav .nav-caption{display:none}
+ .sandbox-active #sandbox-controls{left:0;right:0;top:auto;bottom:0;width:auto;max-height:42%;padding:18px 24px max(16px,env(safe-area-inset-bottom));background:#faf4ebf5;border-top:1px solid #c7b7a5;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px #3029260a}
+ .sandbox-active .capacity{bottom:calc(42% + 12px);left:24px;right:auto}.play-heading{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}.play-heading strong{font-size:24px}.play-heading .eyebrow{font-size:9px;max-width:90px}.play-help{margin:8px 0;font-size:13px}.play-actions{grid-template-columns:repeat(4,1fr);margin:8px 0}.play-actions button{font-size:11px;padding:8px 4px}.object-inspector{display:grid;grid-template-columns:1fr 130px;gap:8px;align-items:end}.object-inspector label{grid-column:1/-1;margin-bottom:0!important}#remove-object{margin:0;padding:8px}.play-status{margin-bottom:0}
+}
+@media(max-width:600px){
+ .experiment-tools{gap:6px;top:72px;left:18px;right:18px}.experiment-tools button{padding:9px 12px;font-size:11px}.panel{padding-bottom:160px}.panel .deck{font-size:14px;line-height:1.5}.panel h2{font-size:clamp(54px,13.5vw,75px)}.panel .stat-number{font-size:52px}.panel .chapter-id{margin-bottom:8px}.panel .footnote{font-size:11px}.intro .eyebrow{max-width:250px;line-height:1.4}
+ .story-nav{bottom:max(14px,env(safe-area-inset-bottom));justify-content:flex-end}.story-nav .nav-caption{display:flex;margin-right:auto}.story-nav .nav-caption strong{max-width:78px;line-height:1.3}.nav-caption span{display:none}.timeline{gap:5px}.timeline select{max-width:124px;font-size:11px;padding:8px}.timeline button{width:44px}
+ .capacity{bottom:70px}.capacity-title{font-size:9px}.size-button{min-width:62px;padding:10px 8px}.dimension{display:none}#item-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal-content{padding-top:50px}.modal-content h3{font-size:40px}#sandbox-controls select{font-size:16px}
+}
+@media(max-width:360px){.experiment-tools button{padding:8px 9px;font-size:10px}.capacity-title{display:none}.story-nav .nav-caption{display:none}.timeline{width:100%;justify-content:space-between}.timeline select{max-width:none;flex:1}.play-actions{grid-template-columns:1fr 1fr}.sandbox-active #sandbox-controls{padding-left:16px;padding-right:16px}.play-heading strong{font-size:22px}}
+@media(max-height:520px) and (orientation:landscape){
+ .topbar{top:6px}.experiment-tools{top:58px}.experience{min-height:500px}.sandbox-active .topbar{display:none}.sandbox-active .experiment-tools{top:10px}.sandbox-active #sandbox-controls{left:12px;right:auto;top:65px;bottom:10px;width:290px;max-height:none;border:0;border-radius:12px;padding:12px}.sandbox-active .capacity{left:auto;right:12px;bottom:12px}.play-help{display:none}.sandbox-active .play-heading .eyebrow{display:none}
+}
+
   </style>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -177,11 +217,24 @@
 <main>
   <section class="experience" id="experience" aria-label="The Bowl Index interactive story">
     <div class="sun-circle" aria-hidden="true"></div><div class="stage-glow" aria-hidden="true"></div>
-    <canvas id="three-canvas" aria-label="A three-dimensional ceramic bowl filled with different foods as the story advances"></canvas>
+    <canvas id="three-canvas" aria-label="A three-dimensional ceramic bowl filled with household items; in Play mode tap an object to select it"></canvas>
     <header class="topbar">
       <div class="brand"><span class="brand-symbol" aria-hidden="true"></span> THE BOWL INDEX</div>
       <div class="topbar-right"><span class="edition">AN INTERACTIVE FIELD GUIDE · VOL. 01</span><button class="text-button" id="about-button" type="button">The method ↗</button></div>
     </header>
+    <div class="experiment-tools" role="group" aria-label="Experiment controls">
+      <button id="mode-button" type="button" aria-pressed="false">✦ Play sandbox</button>
+      <button id="camera-button" type="button" aria-pressed="false">◎ Top view</button>
+      <button id="catalog-button" type="button">20 things ↗</button>
+    </div>
+    <aside id="sandbox-controls" aria-label="Sandbox controls" hidden>
+      <div class="play-heading"><span class="eyebrow">YOUR LITTLE EXPERIMENT</span><strong id="sandbox-count" aria-live="polite">0 things in the bowl</strong></div>
+      <p class="play-help">Mix a little chaos. Add things, then tap one in the bowl to pick it up.</p>
+      <label for="item-picker">What goes in next?</label><select id="item-picker"></select>
+      <div class="play-actions"><button id="add-one" type="button">+ Add one</button><button id="add-handful" type="button">+ A handful</button><button id="mix-bowl" type="button">Surprise me</button><button id="clear-bowl" type="button">Empty bowl</button></div>
+      <div class="object-inspector"><label for="object-picker">Pick an object <span>(or tap it)</span></label><select id="object-picker"><option value="">Nothing selected</option></select><button id="remove-object" type="button" disabled>Remove selected</button></div>
+      <p id="play-status" class="play-status" role="status">A blank bowl. Endless questionable combinations.</p>
+    </aside>
     <div class="bowl-annotation" aria-hidden="true"><span class="annotation-rule"></span><span>FIG. 001<br/>THE VESSEL</span></div>
     <div class="dimension" aria-live="polite"><span id="capacity-stamp">750 ML</span> · NOT TO SCALE</div>
     <div class="stage-label" aria-hidden="true">AN EXERCISE IN EVERYDAY CURIOSITY</div>
@@ -191,7 +244,7 @@
         <div class="panel-content">
           <div class="eyebrow"><span class="dash"></span> A VERY SERIOUS INVESTIGATION OF SOMETHING SILLY</div>
           <h1>How much <em>really</em> fits in a bowl?</h1>
-          <p class="deck">One ordinary bowl. Six delightfully different things. An unnecessarily beautiful way to see just how much “a bowlful” can mean.</p>
+          <p class="deck">One ordinary bowl. Twenty delightfully different things. An unnecessarily beautiful way to see just how much “a bowlful” can mean.</p>
           <div class="scroll-cue"><span class="scroll-cue-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span><span>SCROLL TO EXPLORE</span></div>
         </div>
       </article>
@@ -272,6 +325,7 @@
   </section>
   <footer class="footer"><span><strong>THE BOWL INDEX</strong> · A playful, illustrative thought experiment. Counts are volume-based estimates, not measurements or a physical packing simulation.</span><a href="#experience" id="top-link">Back to the beginning ↑</a></footer>
 </main>
+<dialog id="catalog-dialog" aria-labelledby="catalog-title"><div class="modal-content"><button class="close-modal" id="close-catalog" type="button" aria-label="Close item collection">×</button><div class="eyebrow">THE CUPBOARD IS OPEN</div><h3 id="catalog-title">Pick your curiosity.</h3><p>Twenty everyday things. Choose one to explore, or add it to your sandbox.</p><div id="item-grid"></div></div></dialog>
 <dialog id="method-dialog" aria-labelledby="method-title">
  <div class="modal-content">
    <button class="close-modal" id="close-modal" type="button" aria-label="Close explanation">×</button>
@@ -292,6 +346,7 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
+import { extras } from './items.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const gsap = window.gsap;
@@ -303,6 +358,11 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const mobileQuery = window.matchMedia('(max-width: 600px)');
 const sceneEl = document.getElementById('experience');
 const canvas = document.getElementById('three-canvas');
+for (const [i,item] of extras.entries()) {
+ const article=document.createElement('article');article.className='panel';article.dataset.name=item.name;
+ article.innerHTML=`<div class="panel-content"><div class="chapter-id"><span class="num">${String(i+7).padStart(2,'0')}</span> ${item.tag}</div><h2>${item.heading}</h2><p class="deck">${item.description}</p><div class="stat"><span class="stat-number" data-estimate="${item.id}"></span><span class="stat-label">${item.name.toLowerCase()}</span></div><p class="footnote">${item.note}</p></div>`;
+ document.querySelector('.panel.end').before(article);
+}
 const panels = [...document.querySelectorAll('.panel')];
 const rail = document.getElementById('story-rail');
 const chapterName = document.getElementById('chapter-name');
@@ -310,8 +370,11 @@ const chapterCounter = document.getElementById('chapter-counter');
 const capStamp = document.getElementById('capacity-stamp');
 let capacity = 750, activeStage = 0, food = null, scrollTrigger = null;
 const baseEstimates = { rice:28000, lentils:9800, berries:260, nuts:115, crickets:410, apples:5 };
-const typesByPanel = [null,'rice','lentils','berries','nuts','crickets','apples',null];
-const themes = ['#f3eadf','#e8e9da','#f0e2d3','#e9e6ef','#ecdfcc','#e5e8d2','#f0ded4','#eee4d8'];
+for(const item of extras) baseEstimates[item.id]=item.count;
+const typesByPanel = [null,'rice','lentils','berries','nuts','crickets','apples',...extras.map(i=>i.id),null];
+const themes = ['#f3eadf','#e8e9da','#f0e2d3','#e9e6ef','#ecdfcc','#e5e8d2','#f0ded4',...extras.map(i=>i.theme),'#eee4d8'];
+let sandboxMode=false, topView=false, cameraTransition=false, cameraTween=null;
+const sandboxObjects=[];let selectedObject=null, nextObjectId=1;
 const randFromSeed = (seed) => {let x = seed >>> 0;return () => {x += 0x6D2B79F5;let t=x;t=Math.imul(t^(t>>>15),t|1);t ^= t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};};
 const clamp = (x,min=0,max=1) => Math.min(max,Math.max(min,x));
 const easeOut = (x) => 1-Math.pow(1-clamp(x),4);
@@ -387,6 +450,38 @@ const palettes={
  nuts:[['#a66738','#bb7940','#92552f'],['#8c5c37','#ad7a4b','#7a4b2f'],['#e5ca91','#dac18c','#cfaa73']],
  crickets:['#8c7444','#867a3b','#a68b4d','#6e6739']
 };
+// Recognizable silhouettes, shared by story instances and individually pickable sandbox objects.
+function householdGeometry(id){
+ const ball=()=>new THREE.SphereGeometry(1,16,12);
+ if(['peas','marbles','cotton'].includes(id))return id==='cotton'?new THREE.IcosahedronGeometry(1,2):ball();
+ if(id==='coffee'){const g=ball();g.scale(.7,.45,1);return g;}
+ if(id==='pasta'){const g=new THREE.TorusGeometry(.65,.28,8,16,Math.PI*1.6);g.rotateX(Math.PI/2);return g;}
+ if(['cereal','rubberbands','beads'].includes(id)){const g=new THREE.TorusGeometry(.7,id==='rubberbands'?.09:.28,8,20);g.rotateX(Math.PI/2);return g;}
+ if(id==='paperclips'){
+  const points=[[-.25,0,-.65],[-.25,0,.65],[0,0,.88],[.3,0,.65],[.3,0,-.65],[.08,0,-.84],[-.1,0,-.65],[-.1,0,.45],[.07,0,.58],[.16,0,.45],[.16,0,-.43]].map(p=>new THREE.Vector3(...p));
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),64,.045,6,false);
+ }
+ if(['coins','buttons','corks'].includes(id)){
+  const g=new THREE.CylinderGeometry(1,1,id==='corks'?2:id==='coins'?.12:.25,24);
+  if(id==='buttons'){
+   const pieces=[g];for(const x of [-.3,.3])for(const z of [-.3,.3]){const hole=new THREE.CylinderGeometry(.12,.12,.02,8);hole.translate(x,.135,z);pieces.push(hole);}
+   for(const part of pieces){const c=new Float32Array(part.attributes.position.count*3);c.fill(part===g?1:.13);part.setAttribute('color',new THREE.BufferAttribute(c,3));}
+   const result=mergeGeometries(pieces,false);pieces.forEach(p=>p.dispose());return result;
+  }return g;
+ }
+ const box=new THREE.BoxGeometry(1.6,1.6,1.6);
+ if(id==='dice'){
+  const parts=[box];
+  for(let face=0;face<6;face++)for(let n=0;n<=face;n++){
+   const dot=new THREE.SphereGeometry(.105,8,6),a=face<2?0:face<4?1:2,sign=face%2?1:-1;
+   const pos=[(n%2-.5)*.65,Math.floor(n/2)*.4-.4,0];pos.splice(a,0,sign*.81);pos.length=3;
+   dot.translate(...pos);parts.push(dot);
+  }
+  for(const part of parts){const c=new Float32Array(part.attributes.position.count*3);c.fill(part===box?1:.08);part.setAttribute('color',new THREE.BufferAttribute(c,3));}
+  const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());return g;
+ }return box;
+}
+for(const item of extras){geometries[item.id]=householdGeometry(item.id);renderBase[item.id]=Math.min(item.count,450);palettes[item.id]=item.colors;}
 const genericMat = (roughness=.72)=> new THREE.MeshStandardMaterial({color:0xffffff,roughness,metalness:0});
 const tmpObj = new THREE.Object3D();
 const tmpColor = new THREE.Color();
@@ -407,6 +502,7 @@ function makeScatter(type){
  const records=[],meshes=[];
  for(let v=0;v<variations;v++){
    const count=distribution[v],mesh=new THREE.InstancedMesh(Array.isArray(geometries[type])?geometries[type][v]:geometries[type],genericMat(type==='berries'?.54:.69),count);
+   if(mesh.geometry.attributes.color)mesh.material.vertexColors=true;
    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled=false;group.add(mesh);meshes.push(mesh);
    const colors=type==='nuts'?palettes.nuts[v]:palettes[type];
    for(let i=0;i<count;i++){
@@ -417,6 +513,7 @@ function makeScatter(type){
      else if(type==='lentils'){sx=.095*r;sy=.038*r;sz=.097*r;}
      else if(type==='berries'){sx=.17*r;sy=.17*r;sz=.17*r;}
      else if(type==='crickets'){sx=.64*r;sy=.64*r;sz=.64*r;}
+     else if(extras.some(i=>i.id===type)){const item=extras.find(i=>i.id===type);[sx,sy,sz]=item.scale.map(s=>s*r);}
      else if(v===0){sx=.15*r;sy=.26*r;sz=.145*r;}
      else if(v===1){sx=.205*r;sy=.184*r;sz=.19*r;}
      else {sx=.16*r;sy=.20*r;sz=.15*r;}
@@ -488,8 +585,10 @@ function switchFood(type,instant=false){
  gsap.to(current,{progress:1,duration:1.55,ease:'none',onUpdate:()=>revealFood(current,current.progress)});
 }
 function setStage(n,instant=false){
+ if(sandboxMode)return;
  const index=Math.max(0,Math.min(panels.length-1,n));if(index===activeStage&&!instant)return;
  activeStage=index;
+ chapterPicker.value=String(index);previous.disabled=index===0;next.disabled=index===panels.length-1;
  chapterName.textContent=panels[index].dataset.name.toUpperCase();
  chapterCounter.textContent=String(index+1).padStart(2,'0')+' OF '+String(panels.length).padStart(2,'0');
  document.querySelectorAll('.step').forEach((s,i)=>{if(i===index)s.setAttribute('aria-current','step');else s.removeAttribute('aria-current');});
@@ -503,15 +602,21 @@ function resizeScene(){
  if(isMobile){camera.fov=38;camera.position.set(0,7.2,12.5);camera.lookAt(0,.6,0);root.position.set(0,1.18,0);root.scale.setScalar(.73);}
  else if(w<=900){camera.fov=35;camera.position.set(0,6.1,11.8);camera.lookAt(0,.6,0);root.position.set(1.75,.3,0);root.scale.setScalar(.87);}
  else{camera.fov=32;camera.position.set(0,6.1,10.7);camera.lookAt(0,.5,0);root.position.set(3.05,-.2,0);root.scale.setScalar(1);}
+ if(sandboxMode){root.position.set(w>900?1.5:0,w>900?0:1.1,0);root.scale.setScalar(w>900?.95:.75);camera.position.set(0,7,12.5);}
+ if(sandboxMode&&w>600&&h<520){root.position.set(2.7,-.1,0);root.scale.setScalar(1);camera.position.set(0,6,10.7);}
+ camera.clearViewOffset();
+ if(topView){camera.position.set(0,sandboxMode&&w>600&&h<520?10:13,.015);camera.lookAt(0,.5,0);if(w<=900&&!(sandboxMode&&w>600&&h<520))camera.setViewOffset(w,h,0,h*.18,w,h);}
  camera.updateProjectionMatrix();
 }
 resizeScene();
 window.addEventListener('resize',resizeScene);
 const timeline=document.getElementById('timeline');
-for(let i=0;i<panels.length;i++){
- const b=document.createElement('button');b.className='step';b.type='button';b.setAttribute('aria-label','Go to '+panels[i].dataset.name);b.title=panels[i].dataset.name;
- b.addEventListener('click',()=>goToChapter(i));timeline.appendChild(b);
-}
+const previous=document.createElement('button');previous.type='button';previous.textContent='←';previous.setAttribute('aria-label','Previous chapter');previous.addEventListener('click',()=>goToChapter(Math.max(0,activeStage-1)));
+const chapterPicker=document.createElement('select');chapterPicker.setAttribute('aria-label','Choose story chapter');
+for(const [i,panel] of panels.entries())chapterPicker.add(new Option(panel.dataset.name,String(i)));
+chapterPicker.addEventListener('change',()=>goToChapter(Number(chapterPicker.value)));
+const next=document.createElement('button');next.type='button';next.textContent='→';next.setAttribute('aria-label','Next chapter');next.addEventListener('click',()=>goToChapter(Math.min(panels.length-1,activeStage+1)));
+timeline.append(previous,chapterPicker,next);
 function goToChapter(i){if(!scrollTrigger)return;window.scrollTo({top:scrollTrigger.start+(scrollTrigger.end-scrollTrigger.start)*i/(panels.length-1),behavior:reducedMotion?'auto':'smooth'});}
 const total=panels.length-1;
 const tween=gsap.to(rail,{x:()=>-(total*window.innerWidth),ease:'none',scrollTrigger:{trigger:sceneEl,start:'top top',end:()=>'+='+(total*Math.max(window.innerWidth*.79,window.innerHeight*.82)),pin:true,scrub:reducedMotion?true:1.15,anticipatePin:1,invalidateOnRefresh:true,onUpdate:self=>setStage(Math.round(self.progress*total))}});
@@ -525,7 +630,7 @@ for(const btn of document.querySelectorAll('.size-button')){
    capacity=next;document.querySelectorAll('.size-button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.size)===next)));
    updateEstimates();gsap.to(bowlModel.scale,{x:Math.cbrt(next/750),y:Math.cbrt(next/750),z:Math.cbrt(next/750),duration:.85,ease:'power3.out'});
    gsap.to(shadow.scale,{x:Math.cbrt(next/750),y:Math.cbrt(next/750),duration:.85,ease:'power3.out'});
-   switchFood(typesByPanel[activeStage]);
+   if(sandboxMode){clearSandbox();playStatus.textContent='New bowl size. Ready for a fresh experiment.';}else switchFood(typesByPanel[activeStage]);
  });
 }
 updateEstimates();setStage(0,true);
@@ -536,23 +641,136 @@ dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
 document.getElementById('replay').addEventListener('click',()=>goToChapter(0));
 document.getElementById('top-link').addEventListener('click',e=>{e.preventDefault();goToChapter(0);});
 window.addEventListener('keydown',e=>{
- if(dialog.open||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;
+ if(sandboxMode||document.querySelector('dialog[open]')||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;
  if(e.key==='ArrowRight'){e.preventDefault();goToChapter(Math.min(total,activeStage+1));}
  if(e.key==='ArrowLeft'){e.preventDefault();goToChapter(Math.max(0,activeStage-1));}
 });
 let isDragging=false,downX=0,yaw=0,targetYaw=0,mouseX=0;
-canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;isDragging=true;downX=e.clientX;canvas.setPointerCapture(e.pointerId);});
+let pointerStart=null;
+canvas.addEventListener('pointerdown',e=>{pointerStart={x:e.clientX,y:e.clientY};if(e.pointerType==='touch')return;isDragging=true;downX=e.clientX;canvas.setPointerCapture(e.pointerId);});
 canvas.addEventListener('pointermove',e=>{mouseX=(e.clientX/window.innerWidth-.5)*2;if(isDragging){targetYaw+=(e.clientX-downX)*.006;downX=e.clientX;}});
-canvas.addEventListener('pointerup',()=>isDragging=false);
-canvas.addEventListener('pointercancel',()=>isDragging=false);
+canvas.addEventListener('pointerup',e=>{isDragging=false;if(sandboxMode&&pointerStart&&Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y)<8)pickObject(e);pointerStart=null;});
+canvas.addEventListener('pointercancel',()=>{isDragging=false;pointerStart=null;});
+const catalog=[
+ {id:'rice',name:'Rice',scale:[.041,.032,.108]},
+ {id:'lentils',name:'Lentils',scale:[.095,.038,.097]},
+ {id:'berries',name:'Blueberries',scale:[.17,.17,.17]},
+ {id:'nuts',name:'Mixed nuts',scale:[.15,.26,.145]},
+ {id:'crickets',name:'Crickets',scale:[.64,.64,.64]},
+ {id:'apples',name:'Apples',scale:[1,1,1]},...extras
+];
+const sandboxGroup=new THREE.Group();root.add(sandboxGroup);
+const playStatus=document.getElementById('play-status');
+const objectPicker=document.getElementById('object-picker');
+const itemPicker=document.getElementById('item-picker');
+const modeButton=document.getElementById('mode-button');
+const raycaster=new THREE.Raycaster();
+for(const item of catalog){
+ const option=document.createElement('option');option.value=item.id;option.textContent=item.name;itemPicker.append(option);
+ const button=document.createElement('button');button.type='button';button.innerHTML=`<span class="item-swatch" style="--swatch:${item.colors?.[0]||({rice:'#dbcba8',lentils:'#d7834b',berries:'#5265a0',nuts:'#ad7a4b',crickets:'#867a3b',apples:'#c34f36'}[item.id])}"></span><span>${item.name}</span><small>${formatCount(item.id)} / 750 ml</small>`;
+ button.addEventListener('click',()=>{document.getElementById('catalog-dialog').close();if(sandboxMode){itemPicker.value=item.id;addSandboxItem(item.id);}else goToChapter(typesByPanel.indexOf(item.id));});
+ document.getElementById('item-grid').append(button);
+}
+itemPicker.value='marbles';
+function refreshSandbox(){
+ document.getElementById('sandbox-count').textContent=`${sandboxObjects.length} ${sandboxObjects.length===1?'thing':'things'} in the bowl`;
+ objectPicker.replaceChildren(new Option('Nothing selected',''));
+ for(const obj of sandboxObjects)objectPicker.add(new Option(`${obj.userData.name} · #${obj.userData.sandboxId}`,String(obj.userData.sandboxId)));
+ objectPicker.value=selectedObject?String(selectedObject.userData.sandboxId):'';
+ document.getElementById('remove-object').disabled=!selectedObject;
+ document.getElementById('add-one').disabled=sandboxObjects.length>=150;
+ document.getElementById('add-handful').disabled=sandboxObjects.length>=150;
+}
+function selectObject(obj){
+ if(selectedObject)selectedObject.traverse(m=>{if(m.isMesh)m.material.emissive?.setHex(0);});
+ selectedObject=obj;
+ if(obj){obj.traverse(m=>{if(m.isMesh)m.material.emissive?.setHex(0x3c2610);});playStatus.textContent=`Picked up ${obj.userData.name.toLowerCase()} #${obj.userData.sandboxId}. Remove it, or choose another.`;}
+ refreshSandbox();
+}
+function addSandboxItem(id,announce=true){
+ if(sandboxObjects.length>=150){playStatus.textContent='A delightfully full experiment! Remove something or empty the bowl to keep playing.';return;}
+ const item=catalog.find(i=>i.id===id);let obj;
+ if(id==='apples')obj=createApple(sandboxObjects.length,Math.random);
+ else {
+  const geo=Array.isArray(geometries[id])?geometries[id][0]:geometries[id];
+  const colors=id==='nuts'?palettes.nuts[0]:palettes[id];
+  obj=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:colors[Math.floor(Math.random()*colors.length)],roughness:id==='marbles'?.18:.65,metalness:['coins','paperclips'].includes(id)?.5:0,vertexColors:!!geo.attributes.color}));
+ }
+ const bs=Math.cbrt(capacity/750),n=sandboxObjects.length;
+ // Low-discrepancy placement keeps small handfuls visible without pretending to simulate packing.
+ const radius=(id==='apples'?1.0:1.4)*bs*Math.sqrt(((n*.61803398875)%1));
+ const angle=n*2.399963;
+ const y=(.52+.48*(radius/(1.5*bs))**1.5+Math.floor(n/30)*.11)*bs;
+ obj.position.set(Math.cos(angle)*radius,y+1.3,Math.sin(angle)*radius);
+ obj.rotation.set((Math.random()-.5)*1.3,Math.random()*6.28,(Math.random()-.5)*1.3);
+ obj.scale.set(...item.scale);
+ obj.userData={sandboxId:nextObjectId++,name:item.name,type:id};sandboxGroup.add(obj);sandboxObjects.push(obj);
+ gsap.to(obj.position,{y,duration:reducedMotion?0:.55,ease:'bounce.out'});
+ refreshSandbox();if(announce)playStatus.textContent=`Added ${item.name.toLowerCase()}. Tap it to select it.`;
+}
+function removeSandboxObject(obj){
+ gsap.killTweensOf(obj.position);sandboxGroup.remove(obj);
+ obj.traverse(m=>{if(m.isMesh)m.material.dispose();});
+ sandboxObjects.splice(sandboxObjects.indexOf(obj),1);
+}
+function clearSandbox(){
+ selectedObject=null;for(const obj of [...sandboxObjects])removeSandboxObject(obj);refreshSandbox();
+ playStatus.textContent='A clean slate. What will you try next?';
+}
+function pickObject(e){
+ const rect=canvas.getBoundingClientRect();
+ raycaster.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);
+ const hits=raycaster.intersectObjects([bowlModel,sandboxGroup],true);
+ const hit=hits[0];if(!hit)return;
+ let obj=hit.object;while(obj&&!obj.userData.sandboxId)obj=obj.parent;
+ if(obj)selectObject(obj);
+}
+modeButton.addEventListener('click',()=>{
+ sandboxMode=!sandboxMode;
+ modeButton.setAttribute('aria-pressed',String(sandboxMode));modeButton.textContent=sandboxMode?'↶ Back to story':'✦ Play sandbox';
+ document.getElementById('sandbox-controls').hidden=!sandboxMode;
+ if(sandboxMode){
+  scrollTrigger.disable(false);sceneEl.classList.add('sandbox-active');document.body.classList.add('playing');
+  switchFood(null,true);sandboxGroup.visible=true;
+  if(!sandboxObjects.length){for(let i=0;i<12;i++)addSandboxItem('marbles',false);playStatus.textContent='Start with a few marbles. Tap one to pick it up, or mix in something new.';}else playStatus.textContent='Your experiment is right where you left it. Keep mixing!';
+ }else{
+  sceneEl.classList.remove('sandbox-active');document.body.classList.remove('playing');sandboxGroup.visible=false;
+  scrollTrigger.enable();ScrollTrigger.refresh();setStage(activeStage,true);
+ }
+ resizeScene();
+});
+sandboxGroup.visible=false;
+document.getElementById('camera-button').addEventListener('click',e=>{
+ const oldPosition=camera.position.clone(),oldQuaternion=camera.quaternion.clone();
+ topView=!topView;e.currentTarget.setAttribute('aria-pressed',String(topView));e.currentTarget.textContent=topView?'◒ Side view':'◎ Top view';resizeScene();
+ const newPosition=camera.position.clone(),newQuaternion=camera.quaternion.clone();
+ cameraTween?.kill();cameraTransition=true;camera.position.copy(oldPosition);camera.quaternion.copy(oldQuaternion);
+ const blend={t:0};cameraTween=gsap.to(blend,{t:1,duration:reducedMotion?0:.7,ease:'power2.inOut',onUpdate:()=>{camera.position.lerpVectors(oldPosition,newPosition,blend.t);camera.quaternion.slerpQuaternions(oldQuaternion,newQuaternion,blend.t);},onComplete:()=>{cameraTransition=false;}});
+});
+document.getElementById('catalog-button').addEventListener('click',()=>document.getElementById('catalog-dialog').showModal());
+document.getElementById('close-catalog').addEventListener('click',()=>document.getElementById('catalog-dialog').close());
+document.getElementById('catalog-dialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
+document.getElementById('add-one').addEventListener('click',()=>addSandboxItem(itemPicker.value));
+document.getElementById('add-handful').addEventListener('click',()=>{for(let i=0;i<5;i++)addSandboxItem(itemPicker.value,false);playStatus.textContent='A handful of possibilities. Tap one to take a closer look.';});
+document.getElementById('clear-bowl').addEventListener('click',clearSandbox);
+document.getElementById('mix-bowl').addEventListener('click',()=>{
+ clearSandbox();for(let i=0;i<24;i++)addSandboxItem(catalog[Math.floor(Math.random()*catalog.length)].id,false);
+ playStatus.textContent='A perfectly unreasonable mixture. What will you find?';
+});
+objectPicker.addEventListener('change',()=>selectObject(sandboxObjects.find(o=>o.userData.sandboxId===Number(objectPicker.value))||null));
+document.getElementById('remove-object').addEventListener('click',()=>{
+ if(!selectedObject)return;const name=selectedObject.userData.name;removeSandboxObject(selectedObject);selectedObject=null;refreshSandbox();playStatus.textContent=`Removed ${name.toLowerCase()}. Room for something else!`;
+});
+
 const clock=new THREE.Clock();
 function tick(){
  const seconds=clock.getElapsedTime();yaw+=(targetYaw-yaw)*.085;
- bowlModel.rotation.y=yaw+Math.sin(seconds*.22)*.06;
- if(food)food.group.rotation.y=yaw+Math.sin(seconds*.22)*.06;
- root.rotation.z=Math.sin(seconds*.55)*.006;
- camera.position.x+=(mouseX*.12-camera.position.x)*.007;
- camera.lookAt(0,.55,0);
+ const drift=reducedMotion||sandboxMode?0:Math.sin(seconds*.22)*.06;
+ bowlModel.rotation.y=yaw+drift;
+ sandboxGroup.rotation.y=yaw;
+ if(food)food.group.rotation.y=yaw+drift;
+ root.rotation.z=reducedMotion||sandboxMode?0:Math.sin(seconds*.55)*.006;
+ if(!topView&&!cameraTransition){camera.position.x+=(mouseX*.12-camera.position.x)*.007;camera.lookAt(0,.55,0);}
  renderer.render(scene,camera);
  requestAnimationFrame(tick);
 }
